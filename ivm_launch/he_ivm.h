@@ -9,6 +9,9 @@
 #include <linux/ioctl.h>
 #include <linux/types.h>
 
+#define HC_DEVICE_MAP_DMA 0x53
+#define HC_DEVICE_UNMAP_DMA 0x54
+
 #define HC_VM_CREATE 0x60
 #define HC_VM_DESTROY 0x61
 #define HC_VM_FINALIZE 0x62
@@ -25,6 +28,26 @@
 #define HC_VM_MEASURE 0x6d
 
 #define HE_IVM_PAGE_MEASURE 1u
+#define HE_IVM_PAGE_2M 2u
+/* MAP_DMA / UNMAP_DMA only: fill maps[0].paddr from the donated page at gpa. */
+#define HE_IVM_DMA_USE_GPA 1u
+
+#define HE_DMA_MAP_MAX 64
+
+struct he_dma_mapping {
+	__u64 iova;
+	__u64 paddr;
+	__u64 size;
+} __attribute__((packed));
+
+struct he_device_dma_map_req {
+	__u16 bdf;
+	__u16 _reserved[3];
+	__u64 handle;
+	__u32 nr_maps;
+	__u32 _reserved2;
+	struct he_dma_mapping maps[HE_DMA_MAP_MAX];
+} __attribute__((packed));
 
 #define HE_EXIT_HLT 1u
 #define HE_EXIT_EXT_INTR 2u
